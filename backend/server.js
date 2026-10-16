@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const conexion = require("./db"); // Importamos la conexión creada en db.js
@@ -120,6 +121,7 @@ app.post("/mensajes", (req, res) => {
         });
     });
 });
+
 // 7. Eliminar un mensaje (DELETE)
 app.delete("/mensajes/:id", (req, res) => {
     const id = req.params.id;
@@ -128,18 +130,15 @@ app.delete("/mensajes/:id", (req, res) => {
     conexion.query(sql, [id], (error, resultado) => {
         if (error) {
             console.error("Error al eliminar mensaje:", error);
-            return res.status(500).json({ mensaje: "Error al eliminar el mensaje" });
+            return res.status(500).json({ mensaje: "Error al eliminar el mensaje de contacto" });
         }
-
-        if (resultado.affectedRows === 0) {
-            return res.status(404).json({ mensaje: "Mensaje no encontrado" });
-        }
-
         res.json({ mensaje: "Mensaje eliminado correctamente" });
     });
 });
 
 // Iniciar servidor en el puerto 3000
-app.listen(3000, () => {
-  console.log(" Servidor ejecutándose en http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(` Servidor ejecutándose en http://localhost:${PORT}`);
 });
