@@ -171,7 +171,6 @@ if (formContacto) {
         }
     });
 }
-
 // 6. Consultar los mensajes (READ)
 async function cargarMensajes() {
     if (!listaMensajes) return;
@@ -195,6 +194,7 @@ async function cargarMensajes() {
         mensajes.forEach((mensaje) => {
             const elemento = document.createElement("div");
             elemento.classList.add("producto");
+            elemento.style.position = "relative";
 
             const nombre = document.createElement("h3");
             nombre.textContent = mensaje.nombre_completo;
@@ -208,10 +208,22 @@ async function cargarMensajes() {
             const fecha = document.createElement("p");
             fecha.textContent = `Fecha: ${new Date(mensaje.fecha_mensaje).toLocaleString()}`;
 
+            const btnEliminar = document.createElement("button");
+            btnEliminar.textContent = "Eliminar";
+            btnEliminar.classList.add("btn-eliminar");
+            btnEliminar.style.position = "absolute";
+            btnEliminar.style.top = "10px";
+            btnEliminar.style.right = "10px";
+
+            btnEliminar.addEventListener("click", () => {
+                eliminarMensaje(mensaje.id);
+            });
+
             elemento.appendChild(nombre);
             elemento.appendChild(correo);
             elemento.appendChild(contenido);
             elemento.appendChild(fecha);
+            elemento.appendChild(btnEliminar);
 
             listaMensajes.appendChild(elemento);
         });
@@ -219,6 +231,30 @@ async function cargarMensajes() {
     } catch (error) {
         console.error("Error al cargar los mensajes:", error);
         listaMensajes.textContent = "No se pudieron cargar los mensajes.";
+    }
+}
+
+// 7. Eliminar un mensaje (DELETE)
+async function eliminarMensaje(id) {
+    const confirmar = confirm("¿Deseas eliminar este mensaje de la base de datos?");
+
+    if (!confirmar) return;
+
+    try {
+        const respuesta = await fetch(`${API_URL}/mensajes/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudo eliminar el mensaje");
+        }
+
+        alert("Mensaje eliminado correctamente");
+        await cargarMensajes();
+
+    } catch (error) {
+        console.error("Error al eliminar el mensaje:", error);
+        alert("Error al eliminar el mensaje.");
     }
 }
 
